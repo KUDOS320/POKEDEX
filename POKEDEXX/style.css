@@ -1,0 +1,920 @@
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+@font-face {
+  font-family: pocketMonk;
+  src: url(./Fonts/PocketMonk.ttf);
+}
+@font-face {
+  font-family: slumbersWeight;
+  src: url(./Fonts/SlumbersWeight.ttf);
+}
+@font-face {
+  font-family: moltors;
+  src: url(./Fonts/Moltors.ttf);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+:root {
+  /* Original Type Colors */
+  --grass: #5fbd58;
+  --bug: #92bc2c;
+  --dark: #595761;
+  --dragon: #0c69c8;
+  --electric: #f2d94e;
+  --fairy: #ee90e6;
+  --fighting: #d3425f;
+  --fire: #dc872f;
+  --flying: #a1bbec;
+  --ghost: #5f6dbc;
+  --ground: #da7c4d;
+  --ice: #75d0c1;
+  --normal: #a0a29f;
+  --poison: #b763cf;
+  --psychic: #ff2ca8;
+  --rock: #a38c21;
+  --steel: #5695a3;
+  --water: #539ddf;
+  
+  /* Updated color scheme */
+  --background-light: #eef1f5; /* Cooler light gray */
+  --background-dark: #121212;  /* Standard dark */
+  --card-light: #ffffff;
+  --card-dark: #1e1e1e;      /* Slightly lighter dark for cards */
+  --text-light: #333333;       /* Darker gray for readability */
+  --text-dark: #e0e0e0;        /* Light gray for dark mode text */
+  --accent: #00A9A5;           /* New Teal accent */
+  --accent-secondary: #FF6B6B; /* Example secondary accent */
+  --shadow-light: rgba(0, 0, 0, 0.06); /* Softer shadow */
+  --shadow-dark: rgba(0, 0, 0, 0.25);  /* Softer dark shadow */
+  --border-light: rgba(0, 0, 0, 0.1);
+  --border-dark: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background: linear-gradient(to bottom, var(--background-light), var(--accent));
+  font-family: 'Montserrat', sans-serif;
+  color: var(--text-light);
+  /* Optional: subtle gradient for body background */
+  background-image: linear-gradient(to bottom, var(--background-light), color-mix(in srgb, var(--background-light) 95%, var(--accent)));
+}
+
+h1 {
+  letter-spacing: 3px;
+  font-weight: 800;
+  font-size: 2.8em;
+  padding: 25px;
+  color: var(--text-light);
+  text-align: center;
+  font-family: 'pocketMonk', sans-serif;
+  text-shadow: 2px 2px 4px var(--shadow-light);
+}
+
+.poke-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start; /* Changed from center to allow different card heights if any */
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1300px;
+  gap: 25px; /* Increased gap slightly */
+  padding: 0 20px;
+}
+
+.cardContainer {
+  margin: 10px;
+  perspective: 1000px;
+}
+
+.card {
+  background-color: var(--card-light);
+  border-radius: 18px; /* Slightly more rounded */
+  box-shadow: 0 8px 16px var(--shadow-light);
+  padding: 25px;
+  align-items: center;
+  text-align: center;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+  max-width: 230px;
+  min-width: 230px;
+  min-height: 360px; /* Increased height slightly */
+  max-height: 360px;
+  color: var(--text-light);
+  perspective: 150rem;
+  position: relative;
+  border: 1px solid var(--border-light);
+}
+
+@media screen and (max-width: 600px) {
+  .card {
+    min-width: 43vw !important; /* Adjusted for better fit */
+    max-width: 43vw !important;
+    min-height: 330px;
+    max-height: 330px;
+  }
+}
+
+.cardContainer:hover .card {
+  transform: rotateY(180deg);
+  cursor: pointer;
+  box-shadow: 0 12px 25px var(--shadow-light); /* Enhanced shadow on hover */
+}
+
+/* Handle card flip behavior on touch-screen */
+@media(hover: none) {
+  .cardContainer:hover .card {
+    transform: none;
+    transition: none;
+    box-shadow: 0 8px 16px var(--shadow-light); /* Keep base shadow */
+  }
+  /* Optionally, enable click to flip on touch devices via JS */
+  .card.is-flipped { /* Add this class with JS to flip */
+    transform: rotateY(180deg);
+  }
+  .back {
+    visibility: hidden; /* Original behavior */
+  }
+  .card.is-flipped .back {
+    visibility: visible;
+  }
+  .card.is-flipped .front {
+    visibility: hidden; /* Hide front when flipped */
+  }
+}
+
+.types {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.front,
+.back {
+  backface-visibility: hidden;
+  position: absolute;
+  display: flex;
+  flex-direction: column; /* Ensure content flows vertically */
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  padding: 15px; /* Add some padding inside front/back */
+}
+
+.back {
+  transform: rotateY(-180deg);
+}
+
+.back .background {
+  /* src: url('./path/to/your/new-card-back-background.svg'); /* TODO: Add your new card back background image path here */
+  width: 150px;
+  position: absolute;
+  left: 50%;
+  top: 50%; /* Center it properly */
+  transform: translate(-50%, -50%) rotate(0deg); /* Initial transform for animation */
+  z-index: -10;
+  opacity: 0.15; /* Slightly adjusted opacity */
+  animation: rotateBackElement 10s linear infinite; /* Separate animation name */
+}
+
+.side { /* This class seems to be intended for content within .front or .back */
+  width: 100%; /* Use full width of parent (.front or .back) */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around; /* Space out elements better */
+  align-items: center;
+}
+
+.image-container {
+  position: relative;
+  margin: 10px 0; /* Adjusted margin */
+}
+
+.image {
+  width: 150px; /* Slightly smaller for more space */
+  position: relative;
+  aspect-ratio: 1/1;
+  z-index: 10;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 5px 10px var(--shadow-light)); /* Use theme shadow */
+}
+
+.background { /* This is for the front image container background element */
+  /* src: url('./path/to/your/new-card-front-background-element.svg'); /* TODO: Add new image path here if desired */
+  width: 140px; /* Slightly smaller */
+  position: absolute;
+  left: 50%; /* Centering for the rotate animation */
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: -10;
+  opacity: 0.15;
+  animation: rotateFrontElement 12s linear infinite;
+}
+
+@keyframes rotateFrontElement {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+@keyframes rotateBackElement { /* Renamed to avoid conflict if they have different transforms */
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+
+.number {
+  background-color: rgba(0, 0, 0, 0.05); /* Softer background */
+  padding: 8px 14px; /* Slightly more padding */
+  margin-top: 10px; /* Adjusted margin */
+  border-radius: 20px;
+  font-size: 0.9em; /* Slightly smaller for balance */
+  font-family: moltors, sans-serif;
+  letter-spacing: 1px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+  color: var(--text-light);
+}
+
+.name {
+  padding: 10px; /* Adjusted padding */
+  letter-spacing: 4px; /* Slightly reduced spacing */
+  font-family: "pocketMonk", sans-serif;
+  font-size: 1.5em; /* Adjusted for card size */
+  white-space: nowrap;
+  text-overflow: clip;
+  margin-top: 5px;
+  text-shadow: 1px 1px 2px var(--shadow-light);
+  color: var(--text-light);
+}
+
+.stats {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%; /* Ensure it takes full width */
+  margin-top: 15px; /* Adjusted margin */
+  margin-bottom: 10px;
+  padding: 0;
+  font-family: "slumbersWeight", sans-serif;
+  font-size: 1.4em; /* Adjusted for card size */
+  font-style: italic;
+  letter-spacing: 1.5px; /* Adjusted spacing */
+  color: var(--text-light);
+}
+
+.select-wrapper .regions { /* This class is present but #regionSelect is used below, ensure consistency */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+/* Corrected Header Link Styling */
+.header a {
+  color: var(--text-light);
+  text-decoration: none;
+  transition: color 0.3s, transform 0.3s;
+}
+.header a:hover {
+  color: var(--accent);
+  transform: scale(1.1);
+}
+.features .github, .features .settings-icon /* .settings-icon is a new conceptual element */ {
+  font-size: 1.5em;
+  padding: 0 8px; /* Add some padding around icons */
+}
+/* If .nav class is used within header for navigation items: */
+.header .nav a {
+  font-size: 1.1em; /* Example size for text links */
+  margin: 0 10px;
+}
+
+
+.header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 5.5em;
+  width: 100%;
+  margin-bottom: 30px;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.9); /* Slightly less opaque */
+  box-shadow: 0 2px 10px var(--shadow-light);
+  backdrop-filter: blur(8px); /* Soften blur */
+  border-top: 4px solid var(--accent); /* Added accent border */
+}
+
+.header .logo img {
+  border-radius: 50%;
+  width: 50px; /* Slightly smaller */
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px var(--shadow-light);
+  /* src: url('./path/to/your/new-logo.png'); /* TODO: Add your new logo image path here */
+}
+
+.logo { /* This is the container of the image, e.g., an <a> tag */
+  display: inline-block;
+  transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); /* Smoother rotation */
+}
+.logo:hover {
+  transform: rotate(360deg) scale(1.05); /* Added slight scale on hover */
+}
+
+#scrollToTopBtn,
+#scrollToDownBtn {
+  width: 48px; /* Slightly larger */
+  height: 48px;
+  display: none;
+  position: fixed;
+  bottom: 30px; /* Adjusted position */
+  z-index: 99999;
+  border: none;
+  outline: none;
+  background-color: var(--accent);
+  color: white;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0, 0.2); /* Default shadow */
+  transition: all 0.3s ease;
+  font-size: 1.2em; /* Ensure icon inside is visible */
+}
+
+#scrollToTopBtn {
+  right: 30px;
+}
+
+#scrollToDownBtn {
+  left: 30px;
+}
+
+#scrollToTopBtn:hover,
+#scrollToDownBtn:hover {
+  background-color: color-mix(in srgb, var(--accent) 85%, black); /* Darken accent */
+  transform: translateY(-4px) scale(1.05); /* More pronounced hover */
+  box-shadow: 0 6px 18px rgba(0,0,0, 0.25);
+}
+
+#searchbar {
+  border-radius: 25px;
+  color: var(--text-light);
+  background-color: var(--card-light); /* Match card bg */
+  box-shadow: 0 3px 5px var(--shadow-light);
+  border: 1px solid transparent; /* Prepare for focus border */
+  padding: 12px 20px;
+  transition: all 0.3s ease;
+  width: 260px; /* Slightly wider */
+  max-width: 90%;
+  font-size: 0.95em;
+}
+
+::placeholder {
+  font-weight: 400;
+  color: #aaa; /* Lighter placeholder */
+}
+
+#searchbar:hover {
+  box-shadow: 0 5px 10px var(--shadow-light);
+  transform: translateY(-2px);
+}
+
+#searchbar:focus {
+  border: 1px solid var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent), 0 3px 5px var(--shadow-light); /* Accent glow */
+}
+
+#searchbar:focus::placeholder {
+  opacity: 0.5; /* Don't hide completely */
+}
+
+.box input { /* This style might be for a search input on the card back */
+  width: 100%;
+  height: 45px; /* Adjusted height */
+  border-radius: 20px; /* Consistent rounding */
+  border: 1px solid var(--border-light);
+  outline: none;
+  font-size: 1.5em; /* Adjusted size */
+  background-color: rgba(0, 0, 0, 0.03); /* Very subtle bg */
+  font-weight: 300;
+  letter-spacing: 4px;
+  font-family: "slumbersWeight", sans-serif;
+  text-align: center;
+  padding: 0 15px;
+  color: var(--text-light);
+}
+
+.box input:focus {
+  border: 1px solid var(--accent);
+  background-color: white;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.poke__type__bg > img {
+  width: 20px; /* Slightly smaller icons */
+  height: 20px;
+  transition: all 0.3s ease;
+}
+
+.poke__type__bg:hover > img {
+  transform: scale(1.25); /* Slightly more pop */
+}
+
+.poke__type__bg {
+  width: 40px; /* Adjusted size */
+  height: 40px;
+  border-radius: 50%;
+  margin: 0px 5px; /* Adjusted margin */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  /* Shadows are defined per type below */
+}
+
+/* Type styling with their respective shadows */
+.grass { background: var(--grass); box-shadow: 0 0 12px var(--grass); }
+.bug { background: var(--bug); box-shadow: 0 0 12px var(--bug); }
+.dark { background: var(--dark); box-shadow: 0 0 12px var(--dark); }
+.dragon { background: var(--dragon); box-shadow: 0 0 12px var(--dragon); }
+.electric { background: var(--electric); box-shadow: 0 0 12px color-mix(in srgb, var(--electric) 80%, transparent); }
+.fairy { background: var(--fairy); box-shadow: 0 0 12px var(--fairy); }
+.fighting { background: var(--fighting); box-shadow: 0 0 12px var(--fighting); }
+.flying { background: var(--flying); box-shadow: 0 0 12px var(--flying); }
+.ghost { background: var(--ghost); box-shadow: 0 0 12px var(--ghost); }
+.ground { background: var(--ground); box-shadow: 0 0 12px var(--ground); }
+.ice { background: var(--ice); box-shadow: 0 0 12px var(--ice); }
+.normal { background: var(--normal); box-shadow: 0 0 12px var(--normal); }
+.poison { background: var(--poison); box-shadow: 0 0 12px var(--poison); }
+.psychic { background: var(--psychic); box-shadow: 0 0 12px var(--psychic); }
+.rock { background: var(--rock); box-shadow: 0 0 12px var(--rock); }
+.steel { background: var(--steel); box-shadow: 0 0 12px var(--steel); }
+.water { background: var(--water); box-shadow: 0 0 12px var(--water); }
+.fire { background: var(--fire); box-shadow: 0 0 12px var(--fire); }
+
+.select-wrapper {
+  overflow: hidden;
+  max-width: 95%;
+  width: max-content;
+  margin: auto;
+  margin-bottom: 35px; /* Increased bottom margin */
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 1.1em; /* Adjusted font size */
+  letter-spacing: 0.5px; /* Reduced letter spacing */
+  text-align: center;
+  position: relative;
+}
+
+#regionSelect {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Start from left */
+  gap: 10px; /* Reduced gap */
+  overflow-x: auto; /* Changed to auto for native scroll feel */
+  -ms-overflow-style: none;
+  scrollbar-width: thin; /* Use thin scrollbar */
+  scroll-behavior: smooth;
+  padding: 10px 8px; /* Adjusted padding */
+}
+
+#regionSelect::-webkit-scrollbar {
+  height: 6px; /* Slimmer scrollbar */
+}
+#regionSelect::-moz-scrollbar { /* Firefox */
+  height: 6px;
+}
+
+
+#regionSelect span {
+  background-color: var(--card-light);
+  padding: 10px 20px; /* Increased padding for better touch target */
+  border-radius: 25px; /* Pill shape */
+  border: 1px solid var(--border-light);
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 2px 5px var(--shadow-light);
+  transition: all 0.3s ease;
+  color: var(--text-light);
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+#regionSelect span:hover {
+  background-color: #f8f9fa; /* Slightly off-white hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--shadow-light);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border-light));
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.03); /* Lighter scrollbar track */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b0b0b0; /* Lighter thumb */
+  border-radius: 10px;
+  border: 2px solid transparent; /* Creates padding around thumb */
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #888888;
+}
+
+.active { /* For #regionSelect span */
+  background: var(--accent) !important;
+  color: white !important;
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--accent) 40%, transparent) !important;
+  border-color: var(--accent) !important;
+}
+
+.lds-ring {
+  margin-top: 30vh;
+  display: none; /* Hidden by default */
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-inline: auto;
+}
+
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid var(--accent); /* Use accent color */
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: var(--accent) transparent transparent transparent; /* Spinner effect */
+}
+
+.lds-ring div:nth-child(1) { animation-delay: -0.45s; }
+.lds-ring div:nth-child(2) { animation-delay: -0.3s; }
+.lds-ring div:nth-child(3) { animation-delay: -0.15s; }
+
+@keyframes lds-ring {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.ring-active { /* Class to show loader */
+  display: block;
+}
+
+.features { /* Container for search, dark mode, github, settings etc. */
+  display: flex;
+  justify-content: flex-end; /* Align items to the right */
+  align-items: center;
+  gap: 15px; /* Space between feature items */
+}
+
+.features .github a,
+.features .settings a,
+.features .social-x a {
+  color: var(--text-light); /* Or your desired default icon color */
+  font-size: 1.5em; /* Adjust size */
+  text-decoration: none;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.features .github a:hover,
+.features .settings a:hover,
+.features .social-x a:hover {
+  color: var(--accent); /* Or your desired hover color */
+  transform: scale(1.1);
+}
+
+/* Dark mode adjustments for new icons */
+.dark-mode .features .github a,
+.dark-mode .features .settings a,
+.dark-mode .features .social-x a {
+  color: var(--text-dark);
+}
+
+.dark-mode .features .github a:hover,
+.dark-mode .features .settings a:hover,
+.dark-mode .features .social-x a:hover {
+  color: var(--accent); /* Accent color might be fine for dark mode hover too */
+}
+
+#dark:hover { /* Assuming #dark is the ID of the dark mode toggle button/icon */
+  cursor: pointer;
+  /* color: var(--accent); Apply hover color if it's an icon */
+}
+
+.darkmode-container {
+  /* margin-right: 2.5em; Remove fixed margin, use gap in .features */
+  display: flex;
+  align-items: center;
+}
+
+.darkmode-content {
+  position: relative;
+  /* left: 15%; Remove fixed positioning */
+  z-index: 999;
+  font-size: 1em; /* Adjusted font size */
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500; /* Adjusted weight */
+  display: flex;
+  align-items: center;
+}
+
+.darkmode-text {
+  margin-right: 0.5em;
+  color: var(--text-light);
+}
+
+.github { /* Styling for the GitHub link/icon specifically */
+  min-height: 2rem;
+  min-width: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Conceptual Settings Icon (add HTML: <a href="#" class="settings-icon" aria-label="Settings">⚙</a> in .features) */
+/*
+.settings-icon {
+  font-size: 1.5em;
+  color: var(--text-light);
+  text-decoration: none;
+}
+.settings-icon:hover {
+  color: var(--accent);
+}
+*/
+
+/* Dark mode styling */
+.dark-mode {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+  /* Optional: subtle gradient for body background in dark mode
+  background-image: linear-gradient(to bottom, var(--background-dark), color-mix(in srgb, var(--background-dark) 95%, black));
+  */
+}
+.dark-mode h1 {
+  color: var(--text-dark);
+  text-shadow: 2px 2px 4px var(--shadow-dark);
+}
+.dark-mode .header {
+  background-color: rgba(26, 26, 46, 0.9); /* Darker, slightly less opaque */
+  box-shadow: 0 2px 10px var(--shadow-dark);
+  /* border-top color var(--accent) remains same */
+}
+.dark-mode .header .logo img {
+  box-shadow: 0 3px 8px var(--shadow-dark);
+}
+.dark-mode .card {
+  background-color: var(--card-dark);
+  color: var(--text-dark);
+  box-shadow: 0 8px 16px var(--shadow-dark);
+  border: 1px solid var(--border-dark);
+}
+.dark-mode .cardContainer:hover .card {
+  box-shadow: 0 12px 25px var(--shadow-dark); /* Enhanced shadow on hover */
+}
+.dark-mode .image {
+  filter: drop-shadow(0 5px 10px var(--shadow-dark));
+}
+.dark-mode .number {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-dark);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+}
+.dark-mode .name {
+  color: var(--text-dark);
+  text-shadow: 1px 1px 2px var(--shadow-dark);
+}
+.dark-mode .stats {
+  color: var(--text-dark);
+}
+.dark-mode .darkmode-text {
+  color: var(--text-dark);
+}
+.dark-mode .darkmode-button-icon { /* Assuming this is a class for an icon */
+  color: var(--text-dark);
+}
+.dark-mode .github-icon { /* Assuming this is a class for an icon */
+  color: var(--text-dark);
+}
+.dark-mode .header a { /* General links in header */
+  color: var(--text-dark);
+}
+.dark-mode .header a:hover {
+  color: var(--accent); /* Accent can stay vibrant */
+}
+/*
+.dark-mode .settings-icon {
+  color: var(--text-dark);
+}
+.dark-mode .settings-icon:hover {
+  color: var(--accent);
+}
+*/
+.dark-mode .box input {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-dark);
+  border: 1px solid var(--border-dark);
+}
+.dark-mode .box input:focus {
+  border: 1px solid var(--accent);
+  background-color: var(--card-dark); /* Match card bg */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.dark-mode #searchbar {
+  background-color: var(--card-dark);
+  color: var(--text-dark);
+  box-shadow: 0 3px 5px var(--shadow-dark);
+}
+.dark-mode #searchbar::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+.dark-mode #searchbar:hover {
+  box-shadow: 0 5px 10px var(--shadow-dark);
+}
+.dark-mode #searchbar:focus {
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent), 0 3px 5px var(--shadow-dark);
+}
+.dark-mode #regionSelect span {
+  background-color: var(--card-dark);
+  color: var(--text-dark);
+  border: 1px solid var(--border-dark);
+  box-shadow: 0 2px 5px var(--shadow-dark);
+}
+.dark-mode #regionSelect span:hover {
+  background-color: color-mix(in srgb, var(--card-dark) 80%, white); /* Slightly lighter on hover */
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border-dark));
+  box-shadow: 0 4px 8px var(--shadow-dark);
+}
+.dark-mode #regionSelect span.active { /* Active state keeps accent */
+  background: var(--accent) !important;
+  color: white !important;
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--accent) 40%, transparent) !important;
+  border-color: var(--accent) !important;
+}
+.dark-mode ::-webkit-scrollbar-thumb {
+  background-color: #444; /* Darker scrollbar thumb */
+}
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background-color: #666;
+}
+.dark-mode ::-webkit-scrollbar {
+  background-color: rgba(255,255,255,0.05);
+}
+
+/* General Button Styles (New Feature) */
+.btn {
+  padding: 10px 22px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.btn-primary:hover {
+  background-color: color-mix(in srgb, var(--accent) 85%, black);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.dark-mode .btn-primary {
+  /* Shadow might need adjustment if accent is very dark, but teal is usually fine */
+   box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.dark-mode .btn-primary:hover {
+   box-shadow: 0 6px 15px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+
+/* Media query for smaller screens */
+@media (max-width: 924px) {
+  .header {
+    height: auto; /* Allow height to adjust to content */
+    padding-top: 15px; /* Reduced padding */
+    padding-bottom: 15px;
+    flex-direction: column;
+    gap: 15px; /* Add gap between rows */
+  }
+  .logo { /* Logo can be centered or moved */
+    position: static; /* Remove absolute positioning to flow with flex */
+    /* Or keep absolute if design requires it, e.g. top-left corner */
+    /* position: absolute; left: 15px; top: 15px; */
+    order: -1; /* If flex column, make it appear first or control with order */
+  }
+  .features { /* Contains search, dark mode, etc. */
+    position: static; /* Remove absolute positioning */
+    padding: 0 15px; /* Add some padding */
+    width: 100%;
+    justify-content: center; /* Center features */
+    flex-wrap: wrap; /* Allow features to wrap */
+    gap: 10px 15px; /* Row and column gap */
+  }
+  .darkmode-container {
+    margin-right: 0; /* Remove specific margin */
+  }
+  .darkmode-content {
+    left: 0; /* Reset if it was positioned */
+  }
+  #searchbar {
+    width: 80%; /* Make search bar responsive */
+    max-width: 300px; /* Max width for search */
+    margin: 0 auto; /* Center search bar if it's the only item in its row */
+  }
+  h1 {
+    font-size: 2.4em; /* Slightly smaller H1 */
+    padding: 20px 15px;
+  }
+  .card { /* Card adjustments for smaller screens */
+    min-width: 200px !important; /* Increase min-width for better readability */
+    max-width: 200px !important;
+    min-height: 320px; /* Adjust height */
+    max-height: 320px;
+    padding: 20px;
+  }
+  .image {
+    width: 110px; /* Smaller image */
+  }
+  .name {
+    font-size: 1.2em; /* Smaller name */
+  }
+  .stats {
+    font-size: 1.2em;
+  }
+  .poke-container {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) { /* Additional breakpoint for very small screens */
+  h1 {
+    font-size: 2em;
+  }
+  .card {
+    min-width: 75vw !important; /* Allow cards to take more width */
+    max-width: 75vw !important;
+    min-height: 300px;
+    max-height: 300px;
+  }
+  .image {
+    width: 100px;
+  }
+  .name {
+    font-size: 1.1em;
+    letter-spacing: 3px;
+  }
+  .stats {
+    font-size: 1.1em;
+  }
+  #scrollToTopBtn, #scrollToDownBtn {
+    width: 42px;
+    height: 42px;
+    bottom: 20px;
+  }
+  #scrollToTopBtn { right: 20px; }
+  #scrollToDownBtn { left: 20px; }
+  .header .logo img { width: 45px; height: 45px; }
+  .features {
+    font-size: 0.9em; /* Scale down feature icons/text slightly */
+  }
+  #searchbar {
+    padding: 10px 15px;
+    font-size: 0.9em;
+  }
+}
